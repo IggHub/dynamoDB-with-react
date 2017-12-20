@@ -1,0 +1,27 @@
+.App {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  height: 300px;
+  width: 450px;
+  transform: translate(-50%, -50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: solid 1px #BBB;
+}
+
+.Login {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.Login input{
+  display: block;
+  margin: 10px;
+}
+
+.Login button {
+  margin: 10px;
+}
