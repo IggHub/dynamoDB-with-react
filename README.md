@@ -21,3 +21,5 @@ const SECRET_ACCESS_KEY_WEB = 'your_secret_access_key_here';
 
 const TABLE_NAME = "Donuts";
 ```
+
+*Uses [react-multistep](https://github.com/srdjan/react-multistep)*
