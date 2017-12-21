@@ -5,8 +5,16 @@ class StepTwo extends Component {
     return (
       <div>
         <div>
-          <label>Email</label>
+          <label>Family Name</label>
           <input type="email" />
+        </div>
+        <div>
+          <label>Family Member</label>
+          <input type="text" />
+        </div>
+        <div>
+          <label>Phone</label>
+          <input type="text" />
         </div>
       </div>
     )

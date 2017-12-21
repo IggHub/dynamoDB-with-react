@@ -5,7 +5,15 @@ class StepThree extends Component {
     return (
       <div>
         <div>
-          <label>Address</label>
+          <label>Location Name</label>
+          <input type="text" />
+        </div>
+        <div>
+          <label>Location</label>
+          <input type="text" />
+        </div>
+        <div>
+          <label>Radius</label>
           <input type="text" />
         </div>
       </div>

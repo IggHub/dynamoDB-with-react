@@ -5,6 +5,14 @@ html {
 /* Shared */
 .button {
   border-radius: 100px;
+  background: #65D2E3;
+  color: #FFF;
+  border: none;
+}
+
+/* accept */
+.accept {
+  margin: 10px;
 }
 
 /* Sections */
