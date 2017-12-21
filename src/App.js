@@ -1,15 +1,20 @@
 import React, { Component } from 'react';
 //import Login from './components/Login';
-import './App.css';
+//import DynamoDBQuery from './components/DynamoDBQuery';
+//import './App.css';
+import {steps} from './components/signup';
 import AWS from 'aws-sdk';
+import Multistep from './utils';
+
+
 
 const AWS_REGION = 'us-west-1';
 //const END_POINT = 'http://localhost:8000';
 const END_POINT_WEB = 'dynamodb.us-west-1.amazonaws.com';
 //const ACCESS_KEY_ID = 'fakeMyKeyId';
-const ACCESS_KEY_ID_WEB = 'your_key_id_here';
+const ACCESS_KEY_ID_WEB = '';
 //const SECRET_ACCESS_KEY = 'fakeSecretAccessKey';
-const SECRET_ACCESS_KEY_WEB = 'your_secret_access_key_here';
+const SECRET_ACCESS_KEY_WEB = '';
 const TABLE_NAME = "Donuts";
 
 AWS.config.update({
@@ -138,14 +143,9 @@ class App extends Component {
 
   render() {
     return (
-      <div className="App">
-        <form>
-          <input onChange={(e) => this.handleFlavor(e)} value={this.state.flavor} type="text" />
-          <button type="submit" onClick={this.createItem}>Create item</button>
-          <button type="submit" onClick={this.readItem}>Read item</button>
-          <button type="submit" onClick={this.readAllItems}>Display All</button>
-          <button type="submit" onClick={this.deleteItem}>Delete</button>
-        </form>
+      <div>
+        {/*}<DynamoDBQuery handleFlavor={this.handleFlavor} flavor={this.state.flavor} createItem={this.createItem} readItem={this.readItem} readAllItems={this.readAllItems} deleteItem={this.deleteItem} />{*/}
+        <Multistep initialStep={1} steps={steps}/>
       </div>
     );
   }
