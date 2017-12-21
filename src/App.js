@@ -6,10 +6,10 @@ import AWS from 'aws-sdk';
 
 /**
 * react-multistep
-* https://github.com/srdjan/react-multistep 
+* https://github.com/srdjan/react-multistep
 **/
 import {steps} from './components/signup';
-import Multistep from './utils';
+import Multistep from './multistep';
 
 
 
