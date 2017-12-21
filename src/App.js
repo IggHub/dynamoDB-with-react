@@ -2,8 +2,13 @@ import React, { Component } from 'react';
 //import Login from './components/Login';
 //import DynamoDBQuery from './components/DynamoDBQuery';
 //import './App.css';
-import {steps} from './components/signup';
 import AWS from 'aws-sdk';
+
+/**
+* react-multistep
+* https://github.com/srdjan/react-multistep 
+**/
+import {steps} from './components/signup';
 import Multistep from './utils';
 
 
