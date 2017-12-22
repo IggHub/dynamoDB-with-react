@@ -3,7 +3,7 @@ import React, {Component} from 'react';
 class StepFive extends Component {
   render(){
     return (
-      <div>
+      <div className="container">
         <p>Before you can start using Family Locator, please verify your email address</p>
 
         <p>If you did not receive the confirmation email, please email us at familyLocatorAdmin@familylocator.com</p>
@@ -13,4 +13,4 @@ class StepFive extends Component {
   }
 }
 
-export {StepFive}
+export default StepFive;

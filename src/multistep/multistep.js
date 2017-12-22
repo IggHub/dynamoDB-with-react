@@ -118,6 +118,7 @@ export default class MultiStep extends Component {
           <button style={this.state.showNextBtn ? {} : this.hidden}
                   className="multistep__btn--next"
                   onClick={this.next}>Next</button>
+          
         </div>
       </div>
     );

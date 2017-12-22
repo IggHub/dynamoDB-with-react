@@ -3,7 +3,7 @@ import React, {Component} from 'react';
 class StepFour extends Component {
   render(){
     return (
-      <div>
+      <div className="container">
         <p>By clicking "accept" I agree that:</p>
         <ul>
           <li>I have read and accepted <a href="#">User Agreement</a></li>
@@ -19,4 +19,4 @@ class StepFour extends Component {
   }
 }
 
-export {StepFour}
+export default StepFour;
