@@ -6,15 +6,15 @@ class StepThree extends Component {
       <div className="container">
         <div>
           <label>Location Name</label>
-          <input onChange={this.props.handleLabeledLocationName} type="text" />
+          <input name="labeled_location_name" onChange={this.props.handleSignup} type="text" />
         </div>
         <div>
           <label>Location Address</label>
-          <input onChange={this.props.handleLabeledLocationAddress} type="text" />
+          <input name="labeled_location_address" onChange={this.props.handleSignup} type="text" />
         </div>
         <div>
           <label>Radius</label>
-          <input onChange={this.props.handleLabeledLocationRadius} type="text" />
+          <input name="labeled_location_radius" onChange={this.props.handleSignup} type="text" />
         </div>
       </div>
     )

@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 //import Login from './components/Login';
-import DynamoDBQuery from './components/DynamoDBQuery';
+//import DynamoDBQuery from './components/DynamoDBQuery';
 //import './App.css';
+import randomPinGenerator from './utils/RandomGenerator';
 import AWS from 'aws-sdk';
 import StepOne from './components/signup/StepOne';
 import StepTwo from './components/signup/StepTwo';
@@ -44,30 +45,38 @@ class App extends Component {
   constructor(){
     super();
     this.state = {
+      /*navigating to different form step*/
+      showPrevButton: false,
+      showNextButton: true,
+      currentStepNo: 0,
+
+      /*form states*/
       email: '',
-      user_name: '',
+      username: '',
       password: '',
-      circle_name: '',
-      member_name: '',
-      member_phone_number: '',
+      family_name: '',
+      family_member_name: '',
+      family_member_phone: '',
       labeled_location_name: '',
       labeled_location_radius: '',
       labeled_location_address: ''
     }
+
+    /* hide/display previous/next button */
+    this.hidden = {
+      display: 'none'
+    };
+
     this.createItem = this.createItem.bind(this);
     this.readItem = this.readItem.bind(this);
     this.readAllItems = this.readAllItems.bind(this);
     this.deleteItem = this.deleteItem.bind(this);
+    this.handleSignup = this.handleSignup.bind(this);
+    this.renderProperSteps = this.renderProperSteps.bind(this);
+    this.next = this.next.bind(this);
+    this.previous = this.previous.bind(this);
 
-    this.handleEmail = this.handleEmail.bind(this);
-    this.handleUserName = this.handleUserName.bind(this);
-    this.handlePassword = this.handlePassword.bind(this);
-    this.handleLabeledLocationName = this.handleLabeledLocationName.bind(this);
-    this.handleLabeledLocationRadius = this.handleLabeledLocationRadius.bind(this);
-    this.handleLabeledLocationAddress = this.handleLabeledLocationAddress.bind(this);
-    this.handleFamilyName = this.handleFamilyName.bind(this);
-    this.handleFamilyMemberName = this.handleFamilyMemberName.bind(this);
-    this.handleFamilyMemberPhone = this.handleFamilyMemberPhone.bind(this);
+    this.steps_array = [<StepOne handleSignup={this.handleSignup} />, <StepTwo handleSignup={this.handleSignup} />, <StepThree handleSignup={this.handleSignup} />, <StepFour />, <StepFive />]
   }
 
   sayHello(){
@@ -77,17 +86,19 @@ class App extends Component {
   createItem(e) {
     e.preventDefault();
     const table = TABLE_NAME;
-    const circle_name = this.state.circle_name;
-    const member_name = this.state.member_name;
-    const member_phone_number = this.state.member_phone_number;
+    const family_name = this.state.family_name;
+    const family_member_name = this.state.family_member_name;
+    const family_member_phone = this.state.family_member_phone;
     const labeled_location_name = this.state.labeled_location_name;
     const labeled_location_address = this.state.labeled_location_address;
     const labeled_location_radius = this.state.labeled_location_radius;
     const email = this.state.email;
+    const username = this.state.username;
+    const verification_string = randomPinGenerator();
     const mapAttr = {
-      "circle_name": circle_name,
+      "circle_name": family_name,
       "members": [
-        {'name': member_name, 'phone_number': member_phone_number}
+        {'name': family_member_name, 'phone_number': family_member_phone, 'verification_string': verification_string}
       ],
       "labeled_location": [
         {'name': labeled_location_name, 'radius': labeled_location_radius, 'address': labeled_location_address}
@@ -97,6 +108,7 @@ class App extends Component {
     var params = {
         TableName : table,
         Item:{
+            "username": username,
             "email": email,
             "mapAttr": mapAttr
         }
@@ -183,9 +195,8 @@ class App extends Component {
   }
 
   /**
-  * Need to finish this universal-handler.
-  * Todo:
-  * Rename the states and add appropriate html name attributes
+  * handles any signup input
+  * element name needs to match name
   **/
   handleSignup(e){
     this.setState({
@@ -193,75 +204,68 @@ class App extends Component {
     })
   }
 
-  handleFamilyName(e){
-    this.setState({
-      circle_name: e.target.value
-    })
+  previous(){
+    const currentStepNo = this.state.currentStepNo;
+    const stepsLength = this.steps_array.length;
+    if(currentStepNo === 1){
+      this.setState({
+        currentStepNo: currentStepNo - 1,
+        showPrevButton: false
+      })
+    } else {
+      this.setState({
+        currentStepNo: currentStepNo - 1,
+        showNextButton: true
+      })
+    }
   }
 
-  handleFamilyMemberName(e){
-    this.setState({
-      member_name: e.target.value
-    })
+  next(){
+    const currentStepNo = this.state.currentStepNo;
+    const stepsLength = this.steps_array.length;
+    if(currentStepNo === stepsLength - 2){
+      this.setState({
+        currentStepNo: currentStepNo + 1,
+        showNextButton: false
+      })
+    } else {
+      this.setState({
+        currentStepNo: currentStepNo + 1,
+        showPrevButton: true
+      })
+    }
   }
 
-  handleFamilyMemberPhone(e){
-    this.setState({
-      member_phone_number: e.target.value
-    })
+  renderProperSteps(){
+    //const currentStepNo = this.state.currentStepNo;
+    const STEPS_ARRAY = [<StepOne handleSignup={this.handleSignup} />, <StepTwo handleSignup={this.handleSignup} />, <StepThree handleSignup={this.handleSignup} />, <StepFour />, <StepFive />];
+    return STEPS_ARRAY[this.state.currentStepNo];
   }
-
-  handleEmail(e){
-    this.setState({
-      email: e.target.value
-    })
-  }
-
-  handleUserName(e){
-    this.setState({
-      user_name: e.target.value
-    })
-  }
-
-  handlePassword(e){
-    this.setState({
-      password: e.target.value
-    })
-  }
-
-  handleLabeledLocationName(e){
-    this.setState({
-      labeled_location_name: e.target.value
-    })
-  }
-
-  handleLabeledLocationRadius(e){
-    this.setState({
-      labeled_location_radius: e.target.value
-    })
-  }
-
-  handleLabeledLocationAddress(e){
-    this.setState({
-      labeled_location_address: e.target.value
-    })
-  }
-
-
-
   render() {
-    const STEPS = [<StepOne />, <StepTwo />, <StepThree /> ]
+
+    const STEPS_ARRAY = [<StepOne handleSignup={this.handleSignup} />, <StepTwo handleSignup={this.handleSignup} />, <StepThree handleSignup={this.handleSignup} />, <StepFour />, <StepFive />]
+    const steps = STEPS_ARRAY.map((step, index) => {
+      return <div key={index}>{step}</div>
+    })
+
     return (
       <div>
         {/*}<DynamoDBQuery handleFlavor={this.handleFlavor} flavor={this.state.flavor} createItem={this.createItem} readItem={this.readItem} readAllItems={this.readAllItems} deleteItem={this.deleteItem} />{*/}
         {/*}<Multistep initialStep={1} steps={steps} sayHello={this.sayHello} />{*/}
-        <StepOne handleEmail={this.handleEmail} handlePassword={this.handlePassword} handleUserName={this.handleUserName} />
-        <StepTwo handleFamilyName={this.handleFamilyName} handleFamilyMemberName={this.handleFamilyMemberName} handleFamilyMemberPhone={this.handleFamilyMemberPhone} />
-        <StepThree handleLabeledLocationName={this.handleLabeledLocationName} handleLabeledLocationAddress={this.handleLabeledLocationAddress} handleLabeledLocationRadius={this.handleLabeledLocationRadius} />
-        <StepFour />
-        <StepFive />
+
+        {this.steps_array[this.state.currentStepNo]}
+
         <button onClick={this.readAllItems}>Read all items</button>
         <button onClick={this.createItem}>Send to DynamoDB</button>
+
+        <button style={this.state.showPrevButton ? {} : this.hidden}
+          onClick={this.previous}>
+          Previous
+        </button>
+        <button style={this.state.showNextButton ? {} : this.hidden}
+          onClick={this.next}>
+          Next
+        </button>
       </div>
     );
   }

@@ -6,15 +6,15 @@ class StepTwo extends Component {
       <div className="container">
         <div>
           <label>Family Name</label>
-          <input onChange={this.props.handleFamilyName} type="email" />
+          <input name="family_name" onChange={this.props.handleSignup} type="email" />
         </div>
         <div>
-          <label>Family Member</label>
-          <input onChange={this.props.handleFamilyMemberName} type="text" />
+          <label>Family Member Name:</label>
+          <input name="family_member_name" onChange={this.props.handleSignup} type="text" />
         </div>
         <div>
           <label>Phone</label>
-          <input onChange={this.props.handleFamilyMemberPhone} type="text" />
+          <input name="family_member_phone" onChange={this.props.handleSignup} type="text" />
         </div>
       </div>
     )
