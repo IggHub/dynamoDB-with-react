@@ -7,13 +7,13 @@ class StepOne extends Component {
         <div className="row">
           <div className="six columns">
             <label>Email</label>
-            <input name="email" onChange={this.props.handleSignup} className="u-full-width" type="email" />
+            <input name="email" onChange={this.props.handleSignup} type="email" />
           </div>
         </div>
         <div className="row">
           <div className="six columns">
             <label>User Name</label>
-            <input name="username" onChange={this.props.handleSignup} className="u-full-width" type="text" />
+            <input name="username" onChange={this.props.handleSignup} type="text" />
           </div>
         </div>
         <div className="row">

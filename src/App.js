@@ -254,30 +254,33 @@ class App extends Component {
       stepTrackerArray.push(i + 1)
     }
     return (
-      <div>
+      <div className="container">
         {/*}<DynamoDBQuery handleFlavor={this.handleFlavor} flavor={this.state.flavor} createItem={this.createItem} readItem={this.readItem} readAllItems={this.readAllItems} deleteItem={this.deleteItem} />{*/}
         {/*}<Multistep initialStep={1} steps={steps} sayHello={this.sayHello} />{*/}
-        <div className="container">
-          <ul className="progressbar">
+        <div className="progress-bar-container">
+          <ul className="progress-bar">
             {stepTrackerArray.map((stepNo, index) => {
               return <li className={this.state.currentStepNo < index ? "" : "active"}>Step {stepNo}</li>
             })}
 
           </ul>
         </div>
-        {this.steps_array[this.state.currentStepNo]}
+        <div>
+          {this.steps_array[this.state.currentStepNo]}
+        </div>
+        <div>
+          <button onClick={this.readAllItems}>Read all items</button>
+          <button onClick={this.createItem}>Send to DynamoDB</button>
 
-        <button onClick={this.readAllItems}>Read all items</button>
-        <button onClick={this.createItem}>Send to DynamoDB</button>
-
-        <button style={this.state.showPrevButton ? {} : this.hidden}
-          onClick={this.previous}>
-          Previous
-        </button>
-        <button style={this.state.showNextButton ? {} : this.hidden}
-          onClick={this.next}>
-          Next
-        </button>
+          <button style={this.state.showPrevButton ? {} : this.hidden}
+            onClick={this.previous}>
+            Previous
+          </button>
+          <button style={this.state.showNextButton ? {} : this.hidden}
+            onClick={this.next}>
+            Next
+          </button>
+        </div>
       </div>
     );
   }
