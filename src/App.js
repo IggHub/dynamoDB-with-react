@@ -67,6 +67,8 @@ class App extends Component {
       display: 'none'
     };
 
+
+
     this.createItem = this.createItem.bind(this);
     this.readItem = this.readItem.bind(this);
     this.readAllItems = this.readAllItems.bind(this);
@@ -247,12 +249,22 @@ class App extends Component {
     const steps = STEPS_ARRAY.map((step, index) => {
       return <div key={index}>{step}</div>
     })
-
+    let stepTrackerArray = [];
+    for(let i = 0; i < STEPS_ARRAY.length; i++){
+      stepTrackerArray.push(i + 1)
+    }
     return (
       <div>
         {/*}<DynamoDBQuery handleFlavor={this.handleFlavor} flavor={this.state.flavor} createItem={this.createItem} readItem={this.readItem} readAllItems={this.readAllItems} deleteItem={this.deleteItem} />{*/}
         {/*}<Multistep initialStep={1} steps={steps} sayHello={this.sayHello} />{*/}
+        <div className="container">
+          <ul className="progressbar">
+            {stepTrackerArray.map((stepNo, index) => {
+              return <li className={this.state.currentStepNo < index ? "" : "active"}>Step {stepNo}</li>
+            })}
 
+          </ul>
+        </div>
         {this.steps_array[this.state.currentStepNo]}
 
         <button onClick={this.readAllItems}>Read all items</button>
