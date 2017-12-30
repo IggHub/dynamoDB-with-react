@@ -4,11 +4,13 @@ import React, { Component } from 'react';
 //import './App.css';
 import randomPinGenerator from './utils/RandomGenerator';
 import AWS from 'aws-sdk';
+import axios from 'axios';
 import StepOne from './components/signup/StepOne';
 import StepTwo from './components/signup/StepTwo';
 import StepThree from './components/signup/StepThree';
 import StepFour from './components/signup/StepFour';
 import StepFive from './components/signup/StepFive';
+
 
 /**
 * react-multistep
@@ -25,6 +27,7 @@ const SECRET_ACCESS_KEY_WEB = '';
 const TABLE_NAME = "FamilyLocator";
 const END_POINT_WEB = 'dynamodb.us-west-1.amazonaws.com';
 //const END_POINT = 'http://localhost:8000';
+const GOOGLE_MAP_API_KEY = ''
 
 AWS.config.update({
   region: AWS_REGION,
@@ -50,7 +53,7 @@ class App extends Component {
       showNextButton: true,
       currentStepNo: 0,
 
-      /*form states*/
+      /*form-related states*/
       email: '',
       username: '',
       password: '',
@@ -59,7 +62,12 @@ class App extends Component {
       family_member_phone: '',
       labeled_location_name: '',
       labeled_location_radius: '',
-      labeled_location_address: ''
+      labeled_location_address: '',
+      labeled_location_latitude: '',
+      labeled_location_longitude: '',
+
+      /* google map loading */
+      isGeocoding: false
     }
 
     /* hide/display previous/next button */
@@ -67,18 +75,22 @@ class App extends Component {
       display: 'none'
     };
 
-
-
+    this.getGoogleMapInfo = this.getGoogleMapInfo.bind(this);
     this.createItem = this.createItem.bind(this);
     this.readItem = this.readItem.bind(this);
     this.readAllItems = this.readAllItems.bind(this);
     this.deleteItem = this.deleteItem.bind(this);
     this.handleSignup = this.handleSignup.bind(this);
-    this.renderProperSteps = this.renderProperSteps.bind(this);
     this.next = this.next.bind(this);
     this.previous = this.previous.bind(this);
 
-    this.steps_array = [<StepOne handleSignup={this.handleSignup} />, <StepTwo handleSignup={this.handleSignup} />, <StepThree handleSignup={this.handleSignup} />, <StepFour />, <StepFive />]
+    this.steps_array = [
+          <StepOne handleSignup={this.handleSignup} />,
+          <StepTwo handleSignup={this.handleSignup} />,
+          <StepThree handleSignup={this.handleSignup} />,
+          <StepFour />,
+          <StepFive />
+        ]
   }
 
   sayHello(){
@@ -208,7 +220,6 @@ class App extends Component {
 
   previous(){
     const currentStepNo = this.state.currentStepNo;
-    const stepsLength = this.steps_array.length;
     if(currentStepNo === 1){
       this.setState({
         currentStepNo: currentStepNo - 1,
@@ -238,29 +249,42 @@ class App extends Component {
     }
   }
 
-  renderProperSteps(){
-    //const currentStepNo = this.state.currentStepNo;
-    const STEPS_ARRAY = [<StepOne handleSignup={this.handleSignup} />, <StepTwo handleSignup={this.handleSignup} />, <StepThree handleSignup={this.handleSignup} />, <StepFour />, <StepFive />];
-    return STEPS_ARRAY[this.state.currentStepNo];
+
+  getGoogleMapInfo(){
+    const that = this;
+    this.setState({isGeocoding: true})
+    axios.get('https://maps.googleapis.com/maps/api/geocode/json?address=' + this.state.labeled_location_address + '&key=' + GOOGLE_MAP_API_KEY)
+      .then(function(response){
+        console.log(response.data.results[0].geometry.location);
+        const lat = response.data.results[0].geometry.location.lat;
+        const long = response.data.results[0].geometry.location.lng;
+        that.setState({
+          isGeocoding: false,
+          labeled_location_latitude: lat,
+          labeled_location_longitude: long
+        });
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
   }
   render() {
+    let isGeocoding = this.state.isGeocoding ? <div>Loading</div> : <div></div>
 
-    const STEPS_ARRAY = [<StepOne handleSignup={this.handleSignup} />, <StepTwo handleSignup={this.handleSignup} />, <StepThree handleSignup={this.handleSignup} />, <StepFour />, <StepFive />]
-    const steps = STEPS_ARRAY.map((step, index) => {
-      return <div key={index}>{step}</div>
-    })
     let stepTrackerArray = [];
-    for(let i = 0; i < STEPS_ARRAY.length; i++){
+    for(let i = 0; i < this.steps_array.length; i++){
       stepTrackerArray.push(i + 1)
     }
+
     return (
       <div className="container">
+        {isGeocoding}
         {/*}<DynamoDBQuery handleFlavor={this.handleFlavor} flavor={this.state.flavor} createItem={this.createItem} readItem={this.readItem} readAllItems={this.readAllItems} deleteItem={this.deleteItem} />{*/}
         {/*}<Multistep initialStep={1} steps={steps} sayHello={this.sayHello} />{*/}
         <div className="progress-bar-container">
           <ul className="progress-bar">
             {stepTrackerArray.map((stepNo, index) => {
-              return <li className={this.state.currentStepNo < index ? "" : "active"}>Step {stepNo}</li>
+              return <li key={index} className={this.state.currentStepNo < index ? "" : "active"}>Step {stepNo}</li>
             })}
 
           </ul>
@@ -269,9 +293,10 @@ class App extends Component {
           {this.steps_array[this.state.currentStepNo]}
         </div>
         <div>
-          <button onClick={this.readAllItems}>Read all items</button>
+          {/**}<button onClick={this.readAllItems}>Read all items</button>
           <button onClick={this.createItem}>Send to DynamoDB</button>
-
+          {**/}
+          <button onClick={this.getGoogleMapInfo}>Check map info</button>
           <button style={this.state.showPrevButton ? {} : this.hidden}
             onClick={this.previous}>
             Previous
