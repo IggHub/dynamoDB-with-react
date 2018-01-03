@@ -3,6 +3,8 @@ import React, { Component } from 'react';
 //import DynamoDBQuery from './components/DynamoDBQuery';
 //import './App.css';
 import randomPinGenerator from './utils/RandomGenerator';
+import QueryStringParser from './utils/QueryStringParser';
+import UUIDGenerator from './utils/UUIDGenerator';
 import AWS from 'aws-sdk';
 import axios from 'axios';
 import StepOne from './components/signup/StepOne';
@@ -20,14 +22,13 @@ import StepFive from './components/signup/StepFive';
 //import Multistep from './multistep';
 
 
-
 const AWS_REGION = 'us-west-1';
 const ACCESS_KEY_ID_WEB = '';
 const SECRET_ACCESS_KEY_WEB = '';
 const TABLE_NAME = "FamilyLocator";
 const END_POINT_WEB = 'dynamodb.us-west-1.amazonaws.com';
 //const END_POINT = 'http://localhost:8000';
-const GOOGLE_MAP_API_KEY = ''
+const GOOGLE_MAP_API_KEY = '';
 
 AWS.config.update({
   region: AWS_REGION,
@@ -265,9 +266,11 @@ class App extends Component {
         });
       })
       .catch(function (error) {
+        console.log("address is missing/ incorrect");
         console.log(error);
       });
   }
+
   render() {
     let isGeocoding = this.state.isGeocoding ? <div>Loading</div> : <div></div>
 
@@ -305,6 +308,8 @@ class App extends Component {
             onClick={this.next}>
             Next
           </button>
+          <button onClick={() => QueryStringParser()}>Params</button>
+          <button onClick={() => UUIDGenerator()}>UUID</button>
         </div>
       </div>
     );
