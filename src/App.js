@@ -5,6 +5,7 @@ import React, { Component } from 'react';
 import randomPinGenerator from './utils/RandomGenerator';
 import QueryStringParser from './utils/QueryStringParser';
 import UUIDGenerator from './utils/UUIDGenerator';
+import UnixTimeStamp from './utils/GetTimeStamp';
 import AWS from 'aws-sdk';
 import axios from 'axios';
 import StepOne from './components/signup/StepOne';
@@ -12,6 +13,7 @@ import StepTwo from './components/signup/StepTwo';
 import StepThree from './components/signup/StepThree';
 import StepFour from './components/signup/StepFour';
 import StepFive from './components/signup/StepFive';
+import Loader from './components/Loader';
 
 
 /**
@@ -82,13 +84,14 @@ class App extends Component {
     this.readAllItems = this.readAllItems.bind(this);
     this.deleteItem = this.deleteItem.bind(this);
     this.handleSignup = this.handleSignup.bind(this);
+    this.showObject = this.showObject.bind(this);
     this.next = this.next.bind(this);
     this.previous = this.previous.bind(this);
 
     this.steps_array = [
           <StepOne handleSignup={this.handleSignup} />,
           <StepTwo handleSignup={this.handleSignup} />,
-          <StepThree handleSignup={this.handleSignup} />,
+          <StepThree handleSignup={this.handleSignup} getGoogleMapInfo={this.getGoogleMapInfo} isGeocoding={this.state.isGeocoding} />,
           <StepFour />,
           <StepFive />
         ]
@@ -111,6 +114,8 @@ class App extends Component {
     const username = this.state.username;
     const verification_string = randomPinGenerator();
     const mapAttr = {
+      "first_use_timestamp": UnixTimeStamp(),
+      "use_count": 1,
       "circle_name": family_name,
       "members": [
         {'name': family_member_name, 'phone_number': family_member_phone, 'verification_string': verification_string}
@@ -136,9 +141,7 @@ class App extends Component {
             console.log("PutItem succeeded: \n" + JSON.stringify(data, undefined, 2));
         }
     });
-    this.setState({
-      flavor: ''
-    });
+
   }
 
   readItem(e) {
@@ -250,6 +253,52 @@ class App extends Component {
     }
   }
 
+  showObject(e){
+    e.preventDefault();
+    const table = TABLE_NAME;
+    const family_name = this.state.family_name;
+    const family_member_name = this.state.family_member_name;
+    const family_member_phone = this.state.family_member_phone;
+    const labeled_location_name = this.state.labeled_location_name;
+    const labeled_location_address = this.state.labeled_location_address;
+    const labeled_location_radius = this.state.labeled_location_radius;
+    const labeled_location_latitude = this.state.labeled_location_latitude;
+    const labeled_location_longitude = this.state.labeled_location_longitude;
+    const email = this.state.email;
+    const username = this.state.username;
+    const verification_string = randomPinGenerator();
+    const mapAttr = {
+      "first_use_timestamp": UnixTimeStamp(),
+      "use_count": 1,
+      "circle_name": family_name,
+      "members": [
+        {
+          'name': family_member_name,
+          'phone_number': family_member_phone,
+          'verification_string': verification_string,
+        }
+      ],
+      "labeled_location": [
+        {
+          'name': labeled_location_name,
+          'radius': labeled_location_radius,
+          'address': labeled_location_address,
+          'latitude': labeled_location_latitude,
+          'longitude': labeled_location_longitude
+        }
+      ]
+    }
+
+    var params = {
+        TableName : table,
+        Item:{
+            "username": username,
+            "email": email,
+            "mapAttr": mapAttr
+        }
+    };
+    console.log(params);
+  }
 
   getGoogleMapInfo(){
     const that = this;
@@ -268,11 +317,15 @@ class App extends Component {
       .catch(function (error) {
         console.log("address is missing/ incorrect");
         console.log(error);
+        that.setState({
+          isGeocoding: false
+        })
       });
+
   }
 
   render() {
-    let isGeocoding = this.state.isGeocoding ? <div>Loading</div> : <div></div>
+    let isGeocoding = this.state.isGeocoding ? <Loader /> : <div></div>
 
     let stepTrackerArray = [];
     for(let i = 0; i < this.steps_array.length; i++){
@@ -281,9 +334,7 @@ class App extends Component {
 
     return (
       <div className="container">
-        {isGeocoding}
-        {/*}<DynamoDBQuery handleFlavor={this.handleFlavor} flavor={this.state.flavor} createItem={this.createItem} readItem={this.readItem} readAllItems={this.readAllItems} deleteItem={this.deleteItem} />{*/}
-        {/*}<Multistep initialStep={1} steps={steps} sayHello={this.sayHello} />{*/}
+
         <div className="progress-bar-container">
           <ul className="progress-bar">
             {stepTrackerArray.map((stepNo, index) => {
@@ -292,6 +343,7 @@ class App extends Component {
 
           </ul>
         </div>
+        {isGeocoding}
         <div>
           {this.steps_array[this.state.currentStepNo]}
         </div>
@@ -299,7 +351,6 @@ class App extends Component {
           {/**}<button onClick={this.readAllItems}>Read all items</button>
           <button onClick={this.createItem}>Send to DynamoDB</button>
           {**/}
-          <button onClick={this.getGoogleMapInfo}>Check map info</button>
           <button style={this.state.showPrevButton ? {} : this.hidden}
             onClick={this.previous}>
             Previous
@@ -308,8 +359,12 @@ class App extends Component {
             onClick={this.next}>
             Next
           </button>
+
+          <button onClick={this.getGoogleMapInfo}>Check map info</button>
           <button onClick={() => QueryStringParser()}>Params</button>
           <button onClick={() => UUIDGenerator()}>UUID</button>
+          <button onClick={() => UnixTimeStamp()}>Time Stamp</button>
+          <button onClick={this.showObject}>Show JSON object</button>
         </div>
       </div>
     );
