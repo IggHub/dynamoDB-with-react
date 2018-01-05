@@ -1,7 +1,12 @@
+.hero-container {
+  margin: 0 auto;
+  width: 750px;
+}
+
 .container {
   display: flex;
   flex-direction: column;
-  align-items: left;
+  align-items: center;
   justify-content: center;
 }
 

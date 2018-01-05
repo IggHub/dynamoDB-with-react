@@ -15,22 +15,13 @@ import StepFour from './components/signup/StepFour';
 import StepFive from './components/signup/StepFive';
 import Loader from './components/Loader';
 
-
-/**
-* react-multistep
-* https://github.com/srdjan/react-multistep
-**/
-//import {steps} from './components/signup';
-//import Multistep from './multistep';
-
-
 const AWS_REGION = 'us-west-1';
 const ACCESS_KEY_ID_WEB = '';
 const SECRET_ACCESS_KEY_WEB = '';
 const TABLE_NAME = "FamilyLocator";
 const END_POINT_WEB = 'dynamodb.us-west-1.amazonaws.com';
 //const END_POINT = 'http://localhost:8000';
-const GOOGLE_MAP_API_KEY = '';
+const GOOGLE_MAP_API_KEY = 'AIzaSyDXvd_bHxeKdRyHArFe6Q-nWbvZ5F_lS4s';
 
 AWS.config.update({
   region: AWS_REGION,
@@ -78,6 +69,8 @@ class App extends Component {
       display: 'none'
     };
 
+    this.stepsLength = 5;
+
     this.getGoogleMapInfo = this.getGoogleMapInfo.bind(this);
     this.createItem = this.createItem.bind(this);
     this.readItem = this.readItem.bind(this);
@@ -88,13 +81,6 @@ class App extends Component {
     this.next = this.next.bind(this);
     this.previous = this.previous.bind(this);
 
-    this.steps_array = [
-          <StepOne handleSignup={this.handleSignup} />,
-          <StepTwo handleSignup={this.handleSignup} />,
-          <StepThree handleSignup={this.handleSignup} getGoogleMapInfo={this.getGoogleMapInfo} isGeocoding={this.state.isGeocoding} />,
-          <StepFour />,
-          <StepFive />
-        ]
   }
 
   sayHello(){
@@ -239,7 +225,7 @@ class App extends Component {
 
   next(){
     const currentStepNo = this.state.currentStepNo;
-    const stepsLength = this.steps_array.length;
+    const stepsLength = this.stepsLength;
     if(currentStepNo === stepsLength - 2){
       this.setState({
         currentStepNo: currentStepNo + 1,
@@ -328,44 +314,48 @@ class App extends Component {
     let isGeocoding = this.state.isGeocoding ? <Loader /> : <div></div>
 
     let stepTrackerArray = [];
-    for(let i = 0; i < this.steps_array.length; i++){
+    for(let i = 0; i < this.stepsLength; i++){
       stepTrackerArray.push(i + 1)
     }
 
     return (
-      <div className="container">
+      <div className="hero-container">
+        <div className="container">
+          <div className="progress-bar-container">
+            <ul className="progress-bar">
+              {stepTrackerArray.map((stepNo, index) => {
+                return <li key={index} className={this.state.currentStepNo < index ? "" : "active"}>Step {stepNo}</li>
+              })}
+            </ul>
+          </div>
 
-        <div className="progress-bar-container">
-          <ul className="progress-bar">
-            {stepTrackerArray.map((stepNo, index) => {
-              return <li key={index} className={this.state.currentStepNo < index ? "" : "active"}>Step {stepNo}</li>
-            })}
 
-          </ul>
+          <StepOne handleSignup={this.handleSignup} email={this.state.email} username={this.state.username} password={this.state.password} currentStepNo={this.state.currentStepNo}/>
+          <StepTwo handleSignup={this.handleSignup} family_name={this.state.family_name} family_member_name={this.state.family_member_name} family_member_phone={this.state.family_member_phone} currentStepNo={this.state.currentStepNo} />
+          <StepThree handleSignup={this.handleSignup} getGoogleMapInfo={this.getGoogleMapInfo} labeled_location_name={this.state.labeled_location_name} labeled_location_address={this.state.labeled_location_address} labeled_location_radius={this.state.labeled_location_radius} currentStepNo={this.state.currentStepNo} />
+          <StepFour currentStepNo={this.state.currentStepNo} />
+          <StepFive currentStepNo={this.state.currentStepNo} />
+
+          <div>
+            <button style={this.state.showPrevButton ? {} : this.hidden}
+              onClick={this.previous}>
+              Previous
+            </button>
+            <button style={this.state.showNextButton ? {} : this.hidden}
+              onClick={this.next}>
+              Next
+            </button>
+            {/*}
+            <button onClick={this.getGoogleMapInfo}>Check map info</button>
+            <button onClick={() => QueryStringParser()}>Params</button>
+            <button onClick={() => UUIDGenerator()}>UUID</button>
+            <button onClick={() => UnixTimeStamp()}>Time Stamp</button>
+            <button onClick={this.showObject}>Show JSON object</button>
+            {*/}
+          </div>
         </div>
         {isGeocoding}
-        <div>
-          {this.steps_array[this.state.currentStepNo]}
-        </div>
-        <div>
-          {/**}<button onClick={this.readAllItems}>Read all items</button>
-          <button onClick={this.createItem}>Send to DynamoDB</button>
-          {**/}
-          <button style={this.state.showPrevButton ? {} : this.hidden}
-            onClick={this.previous}>
-            Previous
-          </button>
-          <button style={this.state.showNextButton ? {} : this.hidden}
-            onClick={this.next}>
-            Next
-          </button>
 
-          <button onClick={this.getGoogleMapInfo}>Check map info</button>
-          <button onClick={() => QueryStringParser()}>Params</button>
-          <button onClick={() => UUIDGenerator()}>UUID</button>
-          <button onClick={() => UnixTimeStamp()}>Time Stamp</button>
-          <button onClick={this.showObject}>Show JSON object</button>
-        </div>
       </div>
     );
   }

@@ -2,8 +2,9 @@ import React, {Component} from 'react';
 
 class StepFour extends Component {
   render(){
+    const hideStep = this.props.currentStepNo === 3 ? {} : {display: 'none'}
     return (
-      <div className="container">
+      <div className="container" style={hideStep}>
         <p>By clicking "accept" I agree that:</p>
         <ul>
           <li>I have read and accepted <a href="#">User Agreement</a></li>
