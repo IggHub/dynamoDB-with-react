@@ -14,7 +14,7 @@ class StepThree extends Component {
           <input value={this.props.labeled_location_address} onBlur={this.props.getGoogleMapInfo} name="labeled_location_address" onChange={this.props.handleSignup} type="text" />
         </div>
         <div>
-          <label>Radius</label>
+          <label>Radius (m)</label>
           <input value={this.props.labeled_location_radius} name="labeled_location_radius" onChange={this.props.handleSignup} type="text" />
         </div>
       </div>

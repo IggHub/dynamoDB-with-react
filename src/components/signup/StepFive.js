@@ -8,7 +8,9 @@ class StepFive extends Component {
         <p>Before you can start using Family Locator, please verify your email address</p>
 
         <p>If you did not receive the confirmation email, please email us at familyLocatorAdmin@familylocator.com</p>
-        <button className="button">Verify Account</button>
+        {/*}redirect to amazon alexxa{*/}
+        <button className="button" onClick={() => console.log(this.props.redirect_uri)}>Verify Account</button>
+
       </div>
     )
   }

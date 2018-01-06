@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 //import './App.css';
 import randomPinGenerator from './utils/RandomGenerator';
 import QueryStringParser from './utils/QueryStringParser';
-import UUIDGenerator from './utils/UUIDGenerator';
+import GenerateUUID from './utils/UUIDGenerator';
 import UnixTimeStamp from './utils/GetTimeStamp';
 import AWS from 'aws-sdk';
 import axios from 'axios';
@@ -17,6 +17,7 @@ import Loader from './components/Loader';
 
 const AWS_REGION = 'us-west-1';
 const ACCESS_KEY_ID_WEB = '';
+//const SECRET_ACCESS_KEY = 'fakeSecretAccessKey';
 const SECRET_ACCESS_KEY_WEB = '';
 const TABLE_NAME = "FamilyLocator";
 const END_POINT_WEB = 'dynamodb.us-west-1.amazonaws.com';
@@ -53,6 +54,7 @@ class App extends Component {
       password: '',
       family_name: '',
       family_member_name: '',
+      family_member_synonym: '',
       family_member_phone: '',
       labeled_location_name: '',
       labeled_location_radius: '',
@@ -96,13 +98,15 @@ class App extends Component {
 
   setStateQueryStringsParams(){
     const paramsObj = QueryStringParser();
-    this.setState({
-      params_state: paramsObj.state,
-      params_client_id: paramsObj.client_id,
-      params_scope: paramsObj.scope,
-      params_response_type: paramsObj.response_type,
-      params_redirect_uri: paramsObj.redirect_uri
-    })
+    if(paramsObj){
+      this.setState({
+        params_state: paramsObj.state,
+        params_client_id: paramsObj.client_id,
+        params_scope: paramsObj.scope,
+        params_response_type: paramsObj.response_type,
+        params_redirect_uri: paramsObj.redirect_uri
+      })
+    }
   }
 
   sayHello(){
@@ -114,9 +118,12 @@ class App extends Component {
     const table = TABLE_NAME;
     const family_name = this.state.family_name;
     const family_member_name = this.state.family_member_name;
+    const family_member_synonym = this.state.family_member_synonym
     const family_member_phone = this.state.family_member_phone;
     const labeled_location_name = this.state.labeled_location_name;
     const labeled_location_address = this.state.labeled_location_address;
+    const labeled_location_latitude = this.state.labeled_location_latitude;
+    const labeled_location_longitude = this.state.labeled_location_longitude;
     const labeled_location_radius = this.state.labeled_location_radius;
     const email = this.state.email;
     const username = this.state.username;
@@ -126,10 +133,24 @@ class App extends Component {
       "use_count": 1,
       "circle_name": family_name,
       "members": [
-        {'name': family_member_name, 'phone_number': family_member_phone, 'verification_string': verification_string}
+        {
+          'name': family_member_name,
+          'synonyms': [
+            family_member_synonym
+          ],
+          'phone_number': family_member_phone,
+          'verification_string': verification_string
+        }
       ],
       "labeled_location": [
-        {'name': labeled_location_name, 'radius': labeled_location_radius, 'address': labeled_location_address}
+        {
+          "name": labeled_location_name,
+          "radius": labeled_location_radius,
+          "address": labeled_location_address,
+          "latitude": labeled_location_latitude,
+          "longitude": labeled_location_longitude,
+          "timestamp": UnixTimeStamp()
+        }
       ]
     }
 
@@ -138,7 +159,8 @@ class App extends Component {
         Item:{
             "username": username,
             "email": email,
-            "mapAttr": mapAttr
+            "mapAttr": mapAttr,
+            "uuid": GenerateUUID()
         }
     };
 
@@ -333,7 +355,7 @@ class App extends Component {
 
   render() {
     let isGeocoding = this.state.isGeocoding ? <Loader /> : <div></div>
-
+    let redirect_uri = this.state.params_redirect_uri ? this.state.params_redirect_uri : ''
     let stepTrackerArray = [];
     for(let i = 0; i < this.stepsLength; i++){
       stepTrackerArray.push(i + 1)
@@ -352,10 +374,10 @@ class App extends Component {
 
 
           <StepOne handleSignup={this.handleSignup} email={this.state.email} username={this.state.username} password={this.state.password} currentStepNo={this.state.currentStepNo}/>
-          <StepTwo handleSignup={this.handleSignup} family_name={this.state.family_name} family_member_name={this.state.family_member_name} family_member_phone={this.state.family_member_phone} currentStepNo={this.state.currentStepNo} />
+          <StepTwo handleSignup={this.handleSignup} family_name={this.state.family_name} family_member_name={this.state.family_member_name} family_member_synonym={this.state.family_member_synonym} family_member_phone={this.state.family_member_phone} currentStepNo={this.state.currentStepNo} />
           <StepThree handleSignup={this.handleSignup} getGoogleMapInfo={this.getGoogleMapInfo} labeled_location_name={this.state.labeled_location_name} labeled_location_address={this.state.labeled_location_address} labeled_location_radius={this.state.labeled_location_radius} currentStepNo={this.state.currentStepNo} />
           <StepFour currentStepNo={this.state.currentStepNo} />
-          <StepFive currentStepNo={this.state.currentStepNo} />
+          <StepFive currentStepNo={this.state.currentStepNo} redirect_uri={redirect_uri}/>
 
           <div>
             <button style={this.state.showPrevButton ? {} : this.hidden}
@@ -369,10 +391,10 @@ class App extends Component {
 
             <button onClick={this.getGoogleMapInfo}>Check map info</button>
             <button onClick={() => QueryStringParser()}>Params</button>
-            <button onClick={() => UUIDGenerator()}>UUID</button>
+            <button onClick={() => GenerateUUID()}>UUID</button>
             <button onClick={() => UnixTimeStamp()}>Time Stamp</button>
             <button onClick={this.showObject}>Show JSON object</button>
-            <button onClick={() => console.log(this.state.params_client_id + " " + this.state.params_scope)}>Check params state</button>
+            <button onClick={this.createItem}>Send to DynamoDB table</button>
           </div>
         </div>
         {isGeocoding}

@@ -14,6 +14,10 @@ class StepTwo extends Component {
           <input value={this.props.family_member_name} name="family_member_name" onChange={this.props.handleSignup} type="text" />
         </div>
         <div>
+          <label>Family Member Synonym:</label>
+          <input value={this.props.family_member_synonym} name="family_member_synonym" onChange={this.props.handleSignup} type="text" />
+        </div>
+        <div>
           <label>Phone</label>
           <input value={this.props.family_member_phone} name="family_member_phone" onChange={this.props.handleSignup} type="text" />
         </div>
