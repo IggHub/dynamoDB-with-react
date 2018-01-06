@@ -60,6 +60,13 @@ class App extends Component {
       labeled_location_latitude: '',
       labeled_location_longitude: '',
 
+      /* query strings params */
+      params_state: '',
+      params_client_id: '',
+      params_scope: '',
+      params_response_type: '',
+      params_redirect_uri: '',
+
       /* google map loading */
       isGeocoding: false
     }
@@ -80,7 +87,22 @@ class App extends Component {
     this.showObject = this.showObject.bind(this);
     this.next = this.next.bind(this);
     this.previous = this.previous.bind(this);
+    this.setStateQueryStringsParams = this.setStateQueryStringsParams.bind(this);
+  }
 
+  componentDidMount(){
+    this.setStateQueryStringsParams();
+  }
+
+  setStateQueryStringsParams(){
+    const paramsObj = QueryStringParser();
+    this.setState({
+      params_state: paramsObj.state,
+      params_client_id: paramsObj.client_id,
+      params_scope: paramsObj.scope,
+      params_response_type: paramsObj.response_type,
+      params_redirect_uri: paramsObj.redirect_uri
+    })
   }
 
   sayHello(){
@@ -307,7 +329,6 @@ class App extends Component {
           isGeocoding: false
         })
       });
-
   }
 
   render() {
@@ -345,13 +366,13 @@ class App extends Component {
               onClick={this.next}>
               Next
             </button>
-            {/*}
+
             <button onClick={this.getGoogleMapInfo}>Check map info</button>
             <button onClick={() => QueryStringParser()}>Params</button>
             <button onClick={() => UUIDGenerator()}>UUID</button>
             <button onClick={() => UnixTimeStamp()}>Time Stamp</button>
             <button onClick={this.showObject}>Show JSON object</button>
-            {*/}
+            <button onClick={() => console.log(this.state.params_client_id + " " + this.state.params_scope)}>Check params state</button>
           </div>
         </div>
         {isGeocoding}

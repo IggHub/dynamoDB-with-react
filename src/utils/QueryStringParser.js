@@ -24,6 +24,7 @@ function QueryStringParser(url) {
     console.log(obj);
     return obj;
   } else {
+    return;
     console.log('no query strings');
   }
 }
