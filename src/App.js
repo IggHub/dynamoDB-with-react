@@ -1,18 +1,16 @@
 import React, { Component } from 'react';
-//import Login from './components/Login';
-//import DynamoDBQuery from './components/DynamoDBQuery';
-//import './App.css';
-import randomPinGenerator from './utils/RandomGenerator';
-import QueryStringParser from './utils/QueryStringParser';
-import GenerateUUID from './utils/UUIDGenerator';
-import UnixTimeStamp from './utils/GetTimeStamp';
+
+import Utils from './utils';
+
 import AWS from 'aws-sdk';
 import axios from 'axios';
+
 import StepOne from './components/signup/StepOne';
 import StepTwo from './components/signup/StepTwo';
 import StepThree from './components/signup/StepThree';
 import StepFour from './components/signup/StepFour';
 import StepFive from './components/signup/StepFive';
+
 import Loader from './components/Loader';
 
 const AWS_REGION = 'us-west-1';
@@ -73,18 +71,20 @@ class App extends Component {
       isGeocoding: false
     }
 
-    /* hide/display previous/next button */
-    this.hidden = {
-      display: 'none'
+    /* disable previous/next button */
+    this.disableButton = {
+      pointerEvents: 'none',
+      cursor: 'default',
+      color: '#eee'
     };
 
     this.stepsLength = 5;
 
     this.getGoogleMapInfo = this.getGoogleMapInfo.bind(this);
-    this.createItem = this.createItem.bind(this);
-    this.readItem = this.readItem.bind(this);
-    this.readAllItems = this.readAllItems.bind(this);
-    this.deleteItem = this.deleteItem.bind(this);
+    //this.createItem = this.createItem.bind(this);
+    //this.readItem = this.readItem.bind(this);
+    //this.readAllItems = this.readAllItems.bind(this);
+    //this.deleteItem = this.deleteItem.bind(this);
     this.handleSignup = this.handleSignup.bind(this);
     this.showObject = this.showObject.bind(this);
     this.next = this.next.bind(this);
@@ -97,7 +97,7 @@ class App extends Component {
   }
 
   setStateQueryStringsParams(){
-    const paramsObj = QueryStringParser();
+    const paramsObj = Utils.QueryStringParser();
     if(paramsObj){
       this.setState({
         params_state: paramsObj.state,
@@ -127,9 +127,9 @@ class App extends Component {
     const labeled_location_radius = this.state.labeled_location_radius;
     const email = this.state.email;
     const username = this.state.username;
-    const verification_string = randomPinGenerator();
+    const verification_string = Utils.RandomPinGenerator();
     const mapAttr = {
-      "first_use_timestamp": UnixTimeStamp(),
+      "first_use_timestamp": Utils.UnixTimeStamp(),
       "use_count": 1,
       "circle_name": family_name,
       "members": [
@@ -149,7 +149,7 @@ class App extends Component {
           "address": labeled_location_address,
           "latitude": labeled_location_latitude,
           "longitude": labeled_location_longitude,
-          "timestamp": UnixTimeStamp()
+          "timestamp": Utils.UnixTimeStamp()
         }
       ]
     }
@@ -160,7 +160,7 @@ class App extends Component {
             "username": username,
             "email": email,
             "mapAttr": mapAttr,
-            "uuid": GenerateUUID()
+            "uuid": Utils.GenerateUUID()
         }
     };
 
@@ -173,7 +173,7 @@ class App extends Component {
     });
 
   }
-
+  /**
   readItem(e) {
     e.preventDefault();
     const table = TABLE_NAME;
@@ -242,6 +242,7 @@ class App extends Component {
     });
   }
 
+  **/
   /**
   * handles any signup input
   * element name needs to match name
@@ -296,9 +297,9 @@ class App extends Component {
     const labeled_location_longitude = this.state.labeled_location_longitude;
     const email = this.state.email;
     const username = this.state.username;
-    const verification_string = randomPinGenerator();
+    const verification_string = Utils.RandomPinGenerator();
     const mapAttr = {
-      "first_use_timestamp": UnixTimeStamp(),
+      "first_use_timestamp": Utils.UnixTimeStamp(),
       "use_count": 1,
       "circle_name": family_name,
       "members": [
@@ -363,16 +364,20 @@ class App extends Component {
 
     return (
       <div className="hero-container">
+
+        {/* top progress bar */}
+        <div className="progress-bar-container">
+          <ul className="progress-bar">
+            {stepTrackerArray.map((stepNo, index) => {
+              return <li key={index} className={this.state.currentStepNo < index ? "" : "active"}>Step {stepNo}</li>
+            })}
+          </ul>
+        </div>
+
+        {/*container for forms*/}
         <div className="container">
-          <div className="progress-bar-container">
-            <ul className="progress-bar">
-              {stepTrackerArray.map((stepNo, index) => {
-                return <li key={index} className={this.state.currentStepNo < index ? "" : "active"}>Step {stepNo}</li>
-              })}
-            </ul>
-          </div>
 
-
+          {/* sign up steps */}
           <StepOne handleSignup={this.handleSignup} email={this.state.email} username={this.state.username} password={this.state.password} currentStepNo={this.state.currentStepNo}/>
           <StepTwo handleSignup={this.handleSignup} family_name={this.state.family_name} family_member_name={this.state.family_member_name} family_member_synonym={this.state.family_member_synonym} family_member_phone={this.state.family_member_phone} currentStepNo={this.state.currentStepNo} />
           <StepThree handleSignup={this.handleSignup} getGoogleMapInfo={this.getGoogleMapInfo} labeled_location_name={this.state.labeled_location_name} labeled_location_address={this.state.labeled_location_address} labeled_location_radius={this.state.labeled_location_radius} currentStepNo={this.state.currentStepNo} />
@@ -380,23 +385,25 @@ class App extends Component {
           <StepFive currentStepNo={this.state.currentStepNo} redirect_uri={redirect_uri}/>
 
           <div>
-            <button style={this.state.showPrevButton ? {} : this.hidden}
+            <button style={this.state.showPrevButton ? {} : this.disableButton}
               onClick={this.previous}>
               Previous
             </button>
-            <button style={this.state.showNextButton ? {} : this.hidden}
+            <button style={this.state.showNextButton ? {} : this.disableButton}
               onClick={this.next}>
               Next
             </button>
 
             <button onClick={this.getGoogleMapInfo}>Check map info</button>
-            <button onClick={() => QueryStringParser()}>Params</button>
-            <button onClick={() => GenerateUUID()}>UUID</button>
-            <button onClick={() => UnixTimeStamp()}>Time Stamp</button>
+            <button onClick={() => Utils.QueryStringParser()}>Params</button>
+            <button onClick={() => Utils.GenerateUUID()}>UUID</button>
+            <button onClick={() => Utils.UnixTimeStamp()}>Time Stamp</button>
             <button onClick={this.showObject}>Show JSON object</button>
             <button onClick={this.createItem}>Send to DynamoDB table</button>
           </div>
         </div>
+
+        {/* geocoding loading */}
         {isGeocoding}
 
       </div>

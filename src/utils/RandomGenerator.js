@@ -1,4 +1,4 @@
-const randomPinGenerator = function(){
+const RandomPinGenerator = function(){
   let pinStr = "";
   for(let i = 0; i < 4; i++){
     const randomNum = Math.floor(Math.random() * 10);
@@ -7,4 +7,4 @@ const randomPinGenerator = function(){
   return pinStr;
 }
 
-export default randomPinGenerator;
+export default RandomPinGenerator;
