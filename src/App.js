@@ -364,7 +364,6 @@ class App extends Component {
 
     return (
       <div className="hero-container">
-
         {/* top progress bar */}
         <div className="progress-bar-container">
           <ul className="progress-bar">
@@ -384,7 +383,7 @@ class App extends Component {
           <StepFour currentStepNo={this.state.currentStepNo} />
           <StepFive currentStepNo={this.state.currentStepNo} redirect_uri={redirect_uri}/>
 
-          <div>
+          <div className="buttons-container">
             <button style={this.state.showPrevButton ? {} : this.disableButton}
               onClick={this.previous}>
               Previous
@@ -393,13 +392,14 @@ class App extends Component {
               onClick={this.next}>
               Next
             </button>
-
+            {/*}
             <button onClick={this.getGoogleMapInfo}>Check map info</button>
             <button onClick={() => Utils.QueryStringParser()}>Params</button>
             <button onClick={() => Utils.GenerateUUID()}>UUID</button>
             <button onClick={() => Utils.UnixTimeStamp()}>Time Stamp</button>
             <button onClick={this.showObject}>Show JSON object</button>
             <button onClick={this.createItem}>Send to DynamoDB table</button>
+            {*/}
           </div>
         </div>
 
